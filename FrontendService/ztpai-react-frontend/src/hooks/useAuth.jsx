@@ -2,9 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import Keycloak from "keycloak-js";
 
 
-
-
-
 const client = new Keycloak({
     url: import.meta.env.VITE_KEYCLOAK_URL,
     realm: import.meta.env.VITE_KEYCLOAK_REALM,
@@ -38,11 +35,6 @@ const client = new Keycloak({
         });
     }, []);
     
-
-
-
-
-
   
     return [client, isLogin, token, roles];
   };

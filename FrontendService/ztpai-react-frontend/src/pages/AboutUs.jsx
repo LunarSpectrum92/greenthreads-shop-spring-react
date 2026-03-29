@@ -4,7 +4,7 @@ import Footer from '../Components/Footer.jsx';
 
 
 
-const AboutUs = () => {
+const AboutUs = ({ token, client }) => {
   return (
     <div className="min-vh-100">
     <NavBar token={token}/>

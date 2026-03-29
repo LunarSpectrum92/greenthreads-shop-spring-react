@@ -33,16 +33,10 @@ const MainPage = ({ token}) => {
   const defaultUrl = "http://localhost:8222/api/products/product/all";
   const [finalUrl, setFinalUrl] = useState(defaultUrl);
 
-
-
-
-  // useEffect(() => 
-  // {
-  //   fetchData()
-  // },[])
-
-
-
+  
+  useEffect(() => {
+    fetchData(finalUrl);
+  }, [finalUrl]);
 
 
   const { data: products, loading, error,fetchData} = useGetFetchWithCallback(finalUrl, token);
@@ -79,6 +73,11 @@ const MainPage = ({ token}) => {
     setFinalUrl(urlToUse);
     fetchData(urlToUse);
   }, [url, fetchData]);
+
+
+
+
+
 
 
 
@@ -215,18 +214,27 @@ const MainPage = ({ token}) => {
               <Col md={4} sm={6} xs={12} key={product.productId}>
               <Link  to={{
                           pathname: `/product/${product.productId}`                          
-                        }}>
+                        }} style={{textDecoration: 'none'}}>
 
                 <Card
                   className="bg-bg-light-subtle h-100 shadow-sm"
-                  style={{ border: "0px" }}
+                  style={{ borderColor: 'beige', 
+                    borderWidth: '1px',  // 1000px to zbyt dużo
+                    borderStyle: 'solid', // wymagane dla widoczności ramki
+                      
+                  }}
+                    
                 >
-                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} style={{ objectFit: "cover"}} />
+                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} style={{ borderColor: 'grey', 
+  borderWidth: '2px',  // 1000px to zbyt dużo
+  borderStyle: 'solid', // wymagane dla widoczności ramki
+  objectFit: "cover"}} />
                   <Card.Body className="d-flex flex-column">
                     <Card.Title>{product.productName}</Card.Title>
                     <Card.Text className="">
                       {product.description}
                       <br />
+                      <h5>{product.brand}</h5>
                       <p>
                         <b>{product.price}</b> PLN
                       </p>

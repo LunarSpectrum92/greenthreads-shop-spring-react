@@ -9,7 +9,7 @@ import {
   Accordion
 } from "react-bootstrap";
 import NavBar from "../Components/NavBar.jsx";
-import reactLogo from "../assets/rb_3269.png";
+import reactLogo from "../assets/1.jpg";
 import Footer from "../Components/Footer.jsx";
 import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
 import PaginationProducts from "../Components/PaginationProducts.jsx";

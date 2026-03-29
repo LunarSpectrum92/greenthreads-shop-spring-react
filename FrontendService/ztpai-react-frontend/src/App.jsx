@@ -55,7 +55,7 @@
       element: <AccontPage token={token} client={client}/>
     },{
       path: "/about",
-      element: <AboutUs/>
+      element: <AboutUs token={token} client={client}/>
      },
     
     {

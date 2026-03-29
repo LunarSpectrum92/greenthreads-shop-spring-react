@@ -121,13 +121,13 @@ const MainPage = ({token}) => {
           <Col md={6} className="order-2 order-md-1">
             <Carousel variant="dark">
               <Carousel.Item interval={10000}>
-                <Image src={a} className="" fluid />
+                <Image src={a}  style={{ height: '500px', objectFit: 'cover' }} className="" fluid />
               </Carousel.Item>
               <Carousel.Item interval={10000}>
-                <Image src={b} className="" fluid />
+                <Image src={b} style={{ height: '500px', objectFit: 'cover' }} className="" fluid />
               </Carousel.Item>
               <Carousel.Item interval={10000}>
-                <Image src={c} className="" fluid />
+                <Image src={c}  style={{ height: '500px', objectFit: 'cover' }} className="" fluid />
               </Carousel.Item>
             </Carousel>
           </Col>
@@ -164,14 +164,14 @@ const MainPage = ({token}) => {
           <Row className="g-3 mb-2">
             {displayProducts.map((product) => (
               
-              <Col md={4} sm={6} xs={12} key={product.productId}>
+              <Col md={4} sm={6} xs={12} key={product.productId} >
               <Link  to={{
                           pathname: `/product/${product.productId}`                          
-                        }}>
+                        }} style={{  textDecoration:'none' }}>
 
                 <Card
                   className="bg-bg-light-subtle h-100 shadow-sm"
-                  style={{ border: "0px" }}
+                  style={{ border: "0px", textDecoration:'none' }}
                 >
                   <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} style={{ objectFit: "cover"}} />
                   <Card.Body className="d-flex flex-column">

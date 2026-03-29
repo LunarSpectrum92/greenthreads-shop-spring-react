@@ -15,7 +15,7 @@ import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
 
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
-import reactLogo from "../assets/1.jpg";
+import reactLogo from "../assets/05BY4C572B40.jpg";
 import { useNavigate } from "react-router-dom";
 import useGetFetch from "../hooks/useGetFetch.jsx";
 import useFetch from "../hooks/usePostFetch.jsx";
@@ -41,7 +41,7 @@ const ProductPage = ({ token, url, client }) => {
       return;
     }
     
-    addToCarMultiple(product, cartQuantity);  // Przekazujemy całą ilość do funkcji
+    addToCarMultiple(product, cartQuantity);
     alert(`${product.productName} (${cartQuantity} szt.) was added to the cart!`);
   };
 
@@ -179,12 +179,20 @@ const ProductPage = ({ token, url, client }) => {
               {product?.photoPaths?.length > 0 ? (
                 product.photoPaths.map((photo, index) => (
                   <Carousel.Item key={index}>
-                    <Image src={photo} className="d-block w-100" alt={`Product view ${index + 1}`} />
+                    <Image src={photo} className="d-block w-100" alt={`Product view ${index + 1}`}  style={{
+                            height: "600px",
+                            objectFit: "cover",
+                          }} />
                   </Carousel.Item>
                 ))
               ) : (
                 <Carousel.Item>
-                  <Image src={reactLogo} className="d-block w-100" alt="Default product" />
+                  <Image src={reactLogo} className="d-block w-100" alt="Default product" style={{
+                      maxWidth: "100%",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                          }} />
                 </Carousel.Item>
               )}
             </Carousel>
@@ -192,22 +200,27 @@ const ProductPage = ({ token, url, client }) => {
           <Col md={6} className="d-flex flex-column justify-content-center">
             <h2>{product.productName}</h2>
             <h3>{product.price}</h3>
+            <h5>{product.brand}</h5>
+
             <p>{product.description}</p>
             <Form>
       <Form.Group controlId="productQuantity">
         <Form.Label>Product Quantity: {product.quantity}</Form.Label>
         <Form.Control
           type="number"
-          value={cartQuantity}  // Aktualizacja wartości w kontrolce
+          value={cartQuantity}  
           max={product.quantity}
           min={0}
           placeholder="Enter quantity"
-          onChange={handleQuantityChange} // Zmieniamy stan przy każdej zmianie
+          onChange={handleQuantityChange} 
         />
       </Form.Group>
       <Button
         variant="outline-dark"
-        onClick={() => handleAddToCart(product, cartQuantity)} // Przesyłamy ilość do funkcji handleAddToCart
+        onClick={() => handleAddToCart(product, cartQuantity)} 
+        style={{
+          marginTop: '8px'
+        }}
       >
         {"Dodaj do koszyka"}
       </Button>

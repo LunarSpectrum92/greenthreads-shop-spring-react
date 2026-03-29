@@ -84,8 +84,8 @@ useEffect(() => {
               <Card.Header as="h5">{product.discount ? 'Featured' : 'Product'}</Card.Header>
               <Card.Body className="d-md-flex align-items-center justify-content-between">
                 <div className="d-md-flex align-items-center">
-                  <div className="w-25">
-                    <Card.Img variant="top" src={product.image || reactLogo} />
+                  <div className="w-25" style={{ padding: '3px', marginInlineEnd: '10px'}}>
+                    <Card.Img variant="top" src={product.image || reactLogo}  />
                   </div>
                   <div>
                     <Card.Title>{product.productName}</Card.Title>
