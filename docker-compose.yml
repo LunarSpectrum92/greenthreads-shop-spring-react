@@ -49,7 +49,6 @@ services:
       KC_HOSTNAME_PORT: 7080
       KC_HOSTNAME_STRICT: true
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
-#      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
       KC_DB: postgres
       KC_DB_URL: "jdbc:postgresql://keyCloackDb:5432/keycloak_db"
       KC_DB_USERNAME: root
