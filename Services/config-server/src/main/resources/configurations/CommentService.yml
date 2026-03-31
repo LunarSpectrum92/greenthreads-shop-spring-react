@@ -7,15 +7,21 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5439/comment_db
-    username: root
-    password: postgres
+    url: jdbc:postgresql://${COMMENT_DB_HOST:localhost}:${DB_PORT:5439}/comment_db
+    username: ${COMMENT_POSTGRE_USERNAME}
+    password: ${COMMENT_POSTGRE_PASS}
   jpa:
     database: postgresql
     show-sql: true
     hibernate:
       ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:7080/realms/eCommerce-realm/protocol/openid-connect/certs
+          issuer-uri: http://localhost:7080/realms/eCommerce-realm
 
 
 

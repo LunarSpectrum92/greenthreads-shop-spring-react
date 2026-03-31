@@ -29,16 +29,11 @@ public class PaymentService {
     }
 
 
-
     public ResponseEntity<Integer> createPayment(PaymentDto paymentDto) {
         Payment payment = PaymentMapper.toPayment(paymentDto);
         paymentRepository.save(payment);
-        //paymentProducer.producePaymentMessage(paymentDto);
-//        paymentProducer.produceOrderMessage(paymentDto);
-        return new ResponseEntity<>(payment.getPaymentId(), HttpStatus.CREATED);
+        return new ResponseEntity<>(payment.getPaymentId(), HttpStatus.OK);
     }
-
-
 
 
     public ResponseEntity<Status> payForOrder(PaymentRequest paymentRequest) {
@@ -49,11 +44,11 @@ public class PaymentService {
         payment.get().setCustomerId(paymentRequest.customerId());
         payment.get().setPaymentMethod(paymentRequest.paymentMethod());
 
-        if(payment.get().getAmount().compareTo(paymentRequest.amount()) != 0) {
+        if (payment.get().getAmount().compareTo(paymentRequest.amount()) != 0) {
             payment.get().setStatus(Status.REJECTED);
             paymentRepository.save(payment.get());
             paymentProducer.produceOrderMessage(PaymentMapper.toPaymentDto(payment.get()));
-            return new ResponseEntity<>(Status.REJECTED , HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Status.REJECTED, HttpStatus.BAD_REQUEST);
         }
 
         payment.get().setStatus(Status.SUCCEEDED);
@@ -64,17 +59,10 @@ public class PaymentService {
     }
 
 
-
-
-
-
-
     public ResponseEntity<Integer> getPaymentById(Long id) {
         Optional<Payment> payment = paymentRepository.findById(id);
         return payment.map(value -> new ResponseEntity<>(value.getPaymentId(), HttpStatus.OK)).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-
 
 
 }

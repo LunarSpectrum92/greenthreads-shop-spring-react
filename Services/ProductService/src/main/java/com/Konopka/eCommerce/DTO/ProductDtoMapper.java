@@ -21,9 +21,6 @@ public class ProductDtoMapper implements Function<Product, ProductDto> {
     }
 
 
-
-
-
     @Override
     public ProductDto apply(Product product) {
         return new ProductDto(
@@ -40,6 +37,6 @@ public class ProductDtoMapper implements Function<Product, ProductDto> {
                         .collect(Collectors.toList()),
                 product.getDiscount(),
                 product.getPhotoIds()
-                );
+        );
     }
 }

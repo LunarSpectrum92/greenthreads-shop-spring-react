@@ -21,6 +21,5 @@ public record OrderDto(
         List<OrderProductDto> orderProductsList,
 
         Status status
-        //PaymentMethod paymentMethod
 ) {
 }

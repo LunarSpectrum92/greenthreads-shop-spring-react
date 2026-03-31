@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    List<Comment> findAllByUserId(Integer id);
+    List<Comment> findAllByKeycloakId(String id);
 
     List<Comment> findAllByProductId(Integer id);
 

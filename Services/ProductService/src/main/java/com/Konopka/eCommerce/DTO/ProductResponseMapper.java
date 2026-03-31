@@ -22,7 +22,6 @@ public class ProductResponseMapper {
     PhotoFeign photoFeign;
 
 
-
     @Autowired
     public ProductResponseMapper(ProductRepo productRepo, PhotoFeign photoFeign) {
         this.productRepo = productRepo;
@@ -31,7 +30,7 @@ public class ProductResponseMapper {
 
     public ProductResponse Map(Product product) {
         Set<String> paths = new HashSet<>();
-        if(!product.getPhotoIds().isEmpty()){
+        if (!product.getPhotoIds().isEmpty()) {
             paths = photoFeign.findPhotosByIds(product.getPhotoIds()).getBody();
         }
 

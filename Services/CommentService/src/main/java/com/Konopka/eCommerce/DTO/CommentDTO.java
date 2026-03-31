@@ -7,7 +7,7 @@ public record CommentDTO(
         String commentBody,
         Timestamp commentDate,
         Integer score,
-        Integer userId,
+        String keycloakId,
         Integer productId
 ) {
 }

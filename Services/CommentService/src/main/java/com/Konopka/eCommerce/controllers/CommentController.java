@@ -8,6 +8,8 @@ import com.Konopka.eCommerce.services.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,18 +27,16 @@ public class CommentController {
     }
 
 
-
-
     //create comment
     @PostMapping("/comment")
-    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentRequest comment) {
-        return commentService.createComment(comment);
+    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentRequest comment, Authentication auth) {
+        return commentService.createComment(comment, auth);
     }
 
     //delete comment
     @DeleteMapping("/comment")
-    public ResponseEntity<Integer> deleteComment(@RequestBody Integer commentId) {
-        return commentService.deleteComment(commentId);
+    public ResponseEntity<Integer> deleteComment(@RequestBody Integer commentId, Authentication authentication) {
+        return commentService.deleteComment(commentId, authentication);
     }
 
     //get comment by id
@@ -47,8 +47,8 @@ public class CommentController {
 
     //get comment by user id
     @GetMapping("/comment/user/{userId}")
-    public ResponseEntity<List<Comment>> getCommentByUserId(@PathVariable  Integer userId) {
-        return commentService.getAllCommentsByUser(userId);
+    public ResponseEntity<List<Comment>> getCommentByUserId(@PathVariable String KeykloakId, Authentication auth) {
+        return commentService.getAllCommentsByUser(KeykloakId, auth);
     }
 
     //getCommentsByProductId

@@ -1,8 +1,9 @@
-package com.Konopka.eCommerce.PhotoService.service;
+package com.Konopka.eCommerce.service;
 
+import com.Konopka.eCommerce.Repository.PhotoRepository;
 import com.Konopka.eCommerce.models.Photo;
-import com.Konopka.eCommerce.PhotoService.Repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -20,8 +21,8 @@ import java.util.*;
 public class PhotoService {
 
 
-
-    private static final String FilePath = "C:\\Users\\JK\\Documents\\projekty\\projektZdpai\\Services\\PhotoService\\src\\main\\java\\com\\Konopka\\eCommerce\\PhotoService\\photos";
+    @Value("${photo.path}")
+    private String FilePath;
     PhotoRepository photoRepository;
 
     @Autowired
@@ -31,7 +32,7 @@ public class PhotoService {
 
 
     public ResponseEntity<Photo> addPhoto(MultipartFile photoFile) throws IOException {
-        if(photoFile.isEmpty()){
+        if (photoFile.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -66,60 +67,6 @@ public class PhotoService {
     }
 
 
-
-//    public ResponseEntity<byte[]> findPhotoById(Integer photoId) {
-//        Optional<Photo> photoOpt = photoRepository.findById(photoId);
-//        if (photoOpt.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        Path photoPath = Path.of(photoOpt.get().getPhotoPath()).normalize();
-//        try {
-//            Resource resource = new UrlResource(photoPath.toUri());
-//            if (resource.exists() && resource.isReadable()) {
-//                byte[] fileContent = Files.readAllBytes(photoPath);
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//                headers.setContentDisposition(ContentDisposition.builder("attachment")
-//                        .filename(photoPath.getFileName().toString())
-//                        .build());
-//                return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            }
-//        } catch (IOException e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
-//    public ResponseEntity<Resource> findPhotoById(Integer photoId) {
-//        Optional<Photo> photoOpt = photoRepository.findById(photoId);
-//        if (photoOpt.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//
-//        Path photoPath = Path.of(photoOpt.get().getPhotoPath()).normalize();
-//        try {
-//            Resource resource = new UrlResource(photoPath.toUri());
-//            if (resource.exists() && resource.isReadable()) {
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//                headers.setContentDisposition(ContentDisposition.builder("attachment")
-//                        .filename(photoPath.getFileName().toString())
-//                        .build());
-//                return ResponseEntity.ok()
-//                        .headers(headers)
-//                        .body(resource);
-//            } else {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//            }
-//        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
-
-
     public ResponseEntity<Resource> findPhotoById(Integer photoId) {
         Optional<Photo> photo = photoRepository.findById(photoId);
         if (photo.isEmpty()) {
@@ -151,7 +98,6 @@ public class PhotoService {
     }
 
 
-
     public ResponseEntity<Set<String>> findPhotosByIds(List<Integer> photoIds) {
         if (photoIds == null || photoIds.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -177,8 +123,6 @@ public class PhotoService {
 
         return new ResponseEntity<>(photoUrls, HttpStatus.OK);
     }
-
-
 
 
 }

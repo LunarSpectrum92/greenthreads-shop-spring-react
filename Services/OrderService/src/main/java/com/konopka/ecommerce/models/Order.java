@@ -34,12 +34,9 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderProduct> orderProductsList;
 
-//    @Enumerated(EnumType.STRING)
-//    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
 
 
 }

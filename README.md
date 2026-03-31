@@ -33,27 +33,27 @@ ERD
 
 clientService: 
 
-![img_1.png](img_1.png)
+![img_1.png](assets/img_1.png)
 
 commentService:
 
-![img_2.png](img_2.png)
+![img_2.png](assets/img_2.png)
 
 orderService:
 
-![img_3.png](img_3.png)
+![img_3.png](assets/img_3.png)
 
 paymentService:
 
-![img_4.png](img_4.png)
+![img_4.png](assets/img_4.png)
 
 photoService:
 
-![img_5.png](img_5.png)
+![img_5.png](assets/img_5.png)
 
 productService:
 
-![img_6.png](img_6.png)
+![img_6.png](assets/img_6.png)
 
 
 📂 Struktura projektu

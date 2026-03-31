@@ -10,16 +10,9 @@ spring:
 
     gateway:
 
-
-
       discovery:
         locator:
           enabled: true
-
-
-
-
-
 
       routes:
        - id: customerService

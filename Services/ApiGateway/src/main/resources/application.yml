@@ -1,20 +1,24 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:9999
+    import: optional:configserver:http://${CONFIG_HOST:localhost}:9999
   application:
     name: ApiGateway
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:7080/realms/eCommerce-realm"
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:7080/realms/eCommerce-realm/protocol/openid-connect/certs
+          issuer-uri: http://localhost:7080/realms/eCommerce-realm
 
 app:
   config:
     keycloak:
-      url: http://localhost:7080/
+      url: http://${KEYCLOAK_HOST:localhost}:7080/
       realm: eCommerce-realm
 
+link:
+  cors: http://${REACT_HOST:localhost}:5173
 
 
   security:
@@ -36,6 +40,6 @@ app:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:9090/login/oauth2/code/keycloak
             scope: openid
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs
+#      resourceserver:
+#        jwt:
+#          jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs

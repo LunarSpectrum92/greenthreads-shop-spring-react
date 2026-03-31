@@ -6,6 +6,7 @@ import com.Konopka.eCommerce.Services.CategoryService;
 import com.Konopka.eCommerce.models.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,10 +30,10 @@ public class CategoryController {
 
 
     @PostMapping("/category")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Integer> addCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.createCategory(categoryDto);
     }
-
 
 
     @GetMapping("/categories/parents")
@@ -42,6 +43,7 @@ public class CategoryController {
 
 
     @DeleteMapping("/category")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Integer> deleteCategory(@RequestParam Integer categoryId) {
         return categoryService.DeleteCategory(categoryId);
     }

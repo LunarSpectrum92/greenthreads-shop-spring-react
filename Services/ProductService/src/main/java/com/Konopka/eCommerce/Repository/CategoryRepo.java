@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Integer> {
 
-    @NativeQuery("SELECT * FROM category WHERE category_parent_id IS NULL")
-    List<Category> findAllNestedCategories();
+    @Query("SELECT c FROM Category c WHERE c.categoryParentId IS NULL")
+    List<Category> findAllRootCategories();
 
 
 }

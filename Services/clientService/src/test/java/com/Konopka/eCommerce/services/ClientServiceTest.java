@@ -1,7 +1,6 @@
 package com.Konopka.eCommerce.services;
 
 import com.Konopka.eCommerce.DTO.ClientRequest;
-import com.Konopka.eCommerce.models.Address;
 import com.Konopka.eCommerce.models.Client;
 import com.Konopka.eCommerce.repositories.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,7 @@ public class ClientServiceTest {
     private ClientRepository clientRepository;
 
     @Mock
-    private Authentication auth; // Ujednolicono nazwę z 'authentication' na 'auth' dla spójności
+    private Authentication auth;
 
     @InjectMocks
     private ClientService clientService;
@@ -47,8 +46,6 @@ public class ClientServiceTest {
                 .build();
     }
 
-    // --- getClients ---
-
     @Test
     void getClients_Always_ReturnsList() {
         when(clientRepository.findAll()).thenReturn(List.of(mockClient));
@@ -59,11 +56,8 @@ public class ClientServiceTest {
         verify(clientRepository).findAll();
     }
 
-    // --- getClientById ---
-
     @Test
     void getClientById_AdminAccess_ReturnsOk() {
-        // Poprawiona składnia mockowania authorities
         doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_Admin")))
                 .when(auth).getAuthorities();
         when(clientRepository.findById(1)).thenReturn(Optional.of(mockClient));
@@ -87,15 +81,14 @@ public class ClientServiceTest {
 
     @Test
     void getClientById_NotFound_ReturnsNotFound() {
-        lenient().when(auth.getAuthorities()).thenReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_Admin")));
+        lenient().doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_Admin")))
+                .when(auth).getAuthorities();
         when(clientRepository.findById(99)).thenReturn(Optional.empty());
 
         ResponseEntity<Client> response = clientService.getClientById(99, auth);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
-    // --- createClient ---
 
     @Test
     void createClient_ValidData_ReturnsCreated() {
@@ -105,12 +98,10 @@ public class ClientServiceTest {
 
         ResponseEntity<Client> response = clientService.createClient(request, auth);
 
-        // Zazwyczaj create zwraca 201 CREATED
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 
-    // --- updateClientData ---
 
     @Test
     void updateClientData_UserExists_ReturnsOk() {
@@ -121,12 +112,10 @@ public class ClientServiceTest {
 
         ResponseEntity<Client> response = clientService.updateClientData(request, auth);
 
-        // Zmieniono na CREATED zgodnie z Twoim oryginałem, ale rozważ HttpStatus.OK dla update
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("555", mockClient.getPhone());
     }
 
-    // --- deleteClientByKeycloakId ---
 
     @Test
     void deleteClientByKeycloakId_AdminAccess_ReturnsOk() {

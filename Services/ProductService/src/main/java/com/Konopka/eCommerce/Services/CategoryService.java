@@ -28,8 +28,6 @@ public class CategoryService {
     }
 
 
-
-
     public Optional<CategoryDto> findById(Integer id) {
         return Optional.of(categoryDtoMapper.apply(categoryRepo.findById(id).get()));
     }
@@ -40,17 +38,13 @@ public class CategoryService {
     }
 
 
-
-
     public ResponseEntity<Integer> createCategory(CategoryDto categoryDto) {
         if (categoryRepo.findById(categoryDto.categoryId()).isPresent()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
 
-
-
-        if(categoryDto.categoryParentId() != null){
+        if (categoryDto.categoryParentId() != null) {
             Category category = Category.builder()
                     .categoryId(categoryDto.categoryId())
                     .categoryName(categoryDto.categoryName())
@@ -71,7 +65,7 @@ public class CategoryService {
     }
 
     public ResponseEntity<Integer> DeleteCategory(Integer categoryId) {
-        if(categoryRepo.findById(categoryId).isPresent()){
+        if (categoryRepo.findById(categoryId).isPresent()) {
             categoryRepo.deleteById(categoryId);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
@@ -79,26 +73,23 @@ public class CategoryService {
     }
 
 
-
     public ResponseEntity<CategoryDto> updateCategory(CategoryDto categoryDto) {
         if (categoryRepo.findById(categoryDto.categoryId()).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         Category category = Category.builder()
-                        .categoryId(categoryDto.categoryId())
-                        .categoryName(categoryDto.categoryName())
-                        .categoryParentId(categoryRepo.findById(categoryDto.categoryParentId()).get())
-                        .build();
+                .categoryId(categoryDto.categoryId())
+                .categoryName(categoryDto.categoryName())
+                .categoryParentId(categoryRepo.findById(categoryDto.categoryParentId()).get())
+                .build();
 
 
         categoryRepo.save(category);
 
         return new ResponseEntity<>(
                 categoryDto
-                ,HttpStatus.CONFLICT);
+                , HttpStatus.CONFLICT);
     }
-
-
 
 
     public ResponseEntity<List<CategoryDto>> findParrentCategories(Integer categoryId) {
@@ -110,16 +101,16 @@ public class CategoryService {
         parents.add(category.get().getCategoryParentId());
 
         int i = 0;
-        if(parents.get(i) == null){
+        if (parents.get(i) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Category parent = parents.get(i);
-        while(parent.getCategoryParentId() != null){
+        while (parent.getCategoryParentId() != null) {
             System.out.println(parent);
             parent = parents.get(i);
             System.out.println(parent.getCategoryParentId());
-            if(parent.getCategoryParentId() == null){
+            if (parent.getCategoryParentId() == null) {
                 break;
             }
             parents.add(parent.getCategoryParentId());
@@ -129,11 +120,9 @@ public class CategoryService {
         List<CategoryDto> ParentsToDto = parents.stream()
                 .map((parent1) -> categoryDtoMapper.apply(parent1))
                 .toList();
-        return new ResponseEntity<>(ParentsToDto ,HttpStatus.OK);
+        return new ResponseEntity<>(ParentsToDto, HttpStatus.OK);
 
     }
-
-
 
 
 }

@@ -1,4 +1,3 @@
-
 services:
   clientDb:
     image: postgres:latest
@@ -14,6 +13,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d client_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   keyCloackDb:
     image: postgres:latest
@@ -29,13 +34,22 @@ services:
     networks:
       - net-microservice
     restart: always
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d keycloak_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     environment:
       KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT: true
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+#      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
       KC_DB: postgres
       KC_DB_URL: "jdbc:postgresql://keyCloackDb:5432/keycloak_db"
       KC_DB_USERNAME: root
@@ -46,10 +60,11 @@ services:
       KC_LOG_LEVEL: info
       KAFKA_BOOTSTRAP_SERVERS: ms_kafka:9092
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/localhost/7080" ]
       interval: 15s
-      timeout: 2s
+      timeout: 10s
       retries: 15
+      start_period: 90s
     command:
       - "start-dev"
       - "--http-port"
@@ -64,12 +79,13 @@ services:
     networks:
       - net-microservice
     depends_on:
-      - keyCloackDb
-      - kafka
+      keyCloackDb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     restart: always
     volumes:
       - ./providers:/opt/keycloak/providers
-
 
   productDb:
     image: postgres:latest
@@ -85,6 +101,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d product_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   orderDb:
     image: postgres:latest
@@ -100,12 +122,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
-
-
-
-
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d order_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   paymentDb:
     image: postgres:latest
@@ -121,6 +143,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d payment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   photoDb:
     image: postgres:latest
@@ -136,7 +164,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d photo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   notificationDb:
     image: postgres:latest
@@ -152,11 +185,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
-
-
-
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   commentDb:
     image: postgres:latest
@@ -172,8 +206,12 @@ services:
     networks:
       - net-microservice
     restart: unless-stopped
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d comment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -186,6 +224,13 @@ services:
       - "2181:2181"
     networks:
       - net-microservice
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo ruok | bash -c 'cat > /dev/tcp/localhost/2181' 2>/dev/null"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 20s
+
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: ms_kafka
@@ -193,7 +238,8 @@ services:
       - "9092:9092"
       - "9093:9093"
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     environment:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -204,11 +250,356 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
     networks:
       - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  config-server:
+    build:
+      context: .
+      dockerfile: docker/config-server/Dockerfile
+    environment:
+      - EUREKA_HOST=eureka-server
+      - KEYCLOAK_HOST=keycloak
+      - KAFKA_HOST=ms_kafka
+      - DB_PORT=5432
+      - CONFIG_HOST=config-server
+      - PHOTO_HOST=photo-service
+      - CLIENT_HOST=client-service
+      - PRODUCT_HOST=product-service
+      - ORDER_DB_HOST=orderDb
+      - ORDER_POSTGRE_USERNAME=${ORDER_POSTGRE_USERNAME}
+      - ORDER_POSTGRE_PASS=${ORDER_POSTGRE_PASS}
+      - PAYMENT_DB_HOST=orderDb
+      - PAYMENT_POSTGRE_USERNAME=${PAYMENT_POSTGRE_USERNAME}
+      - PAYMENT_POSTGRE_PASS=${PAYMENT_POSTGRE_PASS}
+      - PHOTO_DB_HOST=orderDb
+      - PHOTO_PATH=${PHOTO_PATH}
+      - PHOTO_POSTGRE_USERNAME=${PHOTO_POSTGRE_USERNAME}
+      - PHOTO_POSTGRE_PASS=${PHOTO_POSTGRE_PASS}
+      - PRODUCT_DB_HOST=productDb
+      - PRODUCT_POSTGRE_USERNAME=${PRODUCT_POSTGRE_USERNAME}
+      - PRODUCT_POSTGRE_PASS=${PRODUCT_POSTGRE_PASS}
+      - COMMENT_DB_HOST=commentDb
+      - KAFKA_PORT=9092
+      - COMMENT_POSTGRE_USERNAME=${COMMENT_POSTGRE_USERNAME}
+      - COMMENT_POSTGRE_PASS=${COMMENT_POSTGRE_PASS}
+      - CLIENT_DB_HOST=clientDb
+      - CLIENT_POSTGRE_USERNAME=${CLIENT_POSTGRE_USERNAME}
+      - CLIENT_POSTGRE_PASS=${CLIENT_POSTGRE_PASS}
+    ports:
+      - "9999:9999"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9999/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - net-microservice
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  eureka-server:
+    build:
+      context: .
+      dockerfile: docker/eureka-server/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - EUREKA_HOST=eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      config-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  photo-service:
+    build:
+      context: .
+      dockerfile: docker/PhotoService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - EUREKA_HOST=eureka-server
+      - KEYCLOAK_HOST=keycloak
+      - PHOTO_DB_HOST=photoDb
+      - PHOTO_PATH=${PHOTO_PATH}
+      - PHOTO_POSTGRE_USERNAME=${PHOTO_POSTGRE_USERNAME}
+      - PHOTO_POSTGRE_PASS=${PHOTO_POSTGRE_PASS}
+      - DB_PORT=5432
+    ports:
+      - "9030:9030"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9030/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      photoDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  client-service:
+    build:
+      context: .
+      dockerfile: docker/ClientService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - DB_PORT=5432
+      - PHOTO_HOST=photo-service
+      - KEYCLOAK_HOST=keycloak
+      - CLIENT_DB_HOST=clientDb
+      - CLIENT_POSTGRE_USERNAME=${CLIENT_POSTGRE_USERNAME}
+      - CLIENT_POSTGRE_PASS=${CLIENT_POSTGRE_PASS}
+      - KAFKA_HOST=ms_kafka
+      - KAFKA_PORT=9092
+      - EUREKA_HOST=eureka-server
+    ports:
+      - "9010:9010"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:9010/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - net-microservice
+    depends_on:
+      clientDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      photo-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  comment-service:
+    build:
+      context: .
+      dockerfile: docker/CommentService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - KEYCLOAK_HOST=keycloak
+      - COMMENT_DB_HOST=commentDb
+      - COMMENT_POSTGRE_USERNAME=${COMMENT_POSTGRE_USERNAME}
+      - COMMENT_POSTGRE_PASS=${COMMENT_POSTGRE_PASS}
+      - DB_PORT=5432
+      - EUREKA_HOST=eureka-server
+    ports:
+      - "9040:9040"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9040/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      commentDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      photo-service:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  product-service:
+    build:
+      context: .
+      dockerfile: docker/ProductService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - KEYCLOAK_HOST=keycloak
+      - EUREKA_HOST=eureka-server
+      - DB_PORT=5432
+      - PHOTO_HOST=photo-service
+      - PRODUCT_DB_HOST=productDb
+      - PRODUCT_POSTGRE_USERNAME=${PRODUCT_POSTGRE_USERNAME}
+      - PRODUCT_POSTGRE_PASS=${PRODUCT_POSTGRE_PASS}
+    ports:
+      - "9020:9020"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9020/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      productDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  order-service:
+    build:
+      context: .
+      dockerfile: docker/OrderService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - EUREKA_HOST=eureka-server
+      - KEYCLOAK_HOST=keycloak
+      - CLIENT_HOST=client-service
+      - PRODUCT_HOST=product-service
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - ORDER_DB_HOST=orderDb
+      - ORDER_POSTGRE_USERNAME=${ORDER_POSTGRE_USERNAME}
+      - ORDER_POSTGRE_PASS=${ORDER_POSTGRE_PASS}
+      - DB_PORT=5432
+    ports:
+      - "9050:9050"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9050/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      orderDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      client-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  frontend-service:
+    build:
+      context: .
+      dockerfile: docker/Frontend/Dockerfile
+    ports:
+      - "5173:80"
+    networks:
+      - net-microservice
+    depends_on:
+      api-gateway:
+        condition: service_started
 
 
+  payment-service:
+    build:
+      context: .
+      dockerfile: docker/PaymentService/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - KEYCLOAK_HOST=keycloak
+      - EUREKA_HOST=eureka-server
+      - KAFKA_HOST=ms_kafka
+      - EUREKA_HOST=eureka-server
+      - KAFKA_PORT=9092
+      - PAYMENT_DB_HOST=paymentDb
+      - PAYMENT_POSTGRE_USERNAME=${PAYMENT_POSTGRE_USERNAME}
+      - DB_PORT=5432
+      - PAYMENT_POSTGRE_PASS=${PAYMENT_POSTGRE_PASS}
+    ports:
+      - "9060:9060"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9060/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      paymentDb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
 
-
-
+  api-gateway:
+    build:
+      context: .
+      dockerfile: docker/ApiGateway/Dockerfile
+    environment:
+      - CONFIG_HOST=config-server
+      - KEYCLOAK_HOST=keycloak
+      - REACT_HOST=frontend-service
+      - EUREKA_HOST=eureka-server
+      - DB_HOST=postgres_auth
+      - USER_HOST=user-service
+    ports:
+      - "8222:8222"
+    networks:
+      - net-microservice
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8222/ 2>&1 | grep -q 'HTTP/' || wget -q -O- http://localhost:9030/ > /dev/null 2>&1; [ $$? -le 1 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      client-service:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      comment-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+      photo-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
 
 networks:
   net-microservice:

@@ -1,4 +1,4 @@
-package com.Konopka.eCommerce.PhotoService.Repository;
+package com.Konopka.eCommerce.Repository;
 
 
 import com.Konopka.eCommerce.models.Photo;

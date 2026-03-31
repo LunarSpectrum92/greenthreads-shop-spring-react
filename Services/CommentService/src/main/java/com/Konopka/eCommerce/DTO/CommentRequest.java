@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 public record CommentRequest (
     String commentBody,
     Integer score,
-    Integer userId,
+    String keycloakId,
     Integer productId
 
 ) {

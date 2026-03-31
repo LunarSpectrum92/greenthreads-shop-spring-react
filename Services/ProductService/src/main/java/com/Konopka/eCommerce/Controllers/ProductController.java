@@ -1,20 +1,18 @@
 package com.Konopka.eCommerce.Controllers;
 
 
-import com.Konopka.eCommerce.DTO.CreateProductDto;
 import com.Konopka.eCommerce.DTO.PhotoDto;
 import com.Konopka.eCommerce.DTO.ProductDto;
 import com.Konopka.eCommerce.DTO.ProductResponse;
-import com.Konopka.eCommerce.models.Category;
 import com.Konopka.eCommerce.models.PhotoFeign;
 import com.Konopka.eCommerce.models.Product;
 import com.Konopka.eCommerce.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,53 +32,49 @@ public class ProductController {
 
     //get all products
     @GetMapping("/products")
-    public List<ProductResponse> GetProductsById(@RequestBody List<Integer> ids){
+    public List<ProductResponse> GetProductsById(@RequestBody List<Integer> ids) {
         return productService.GetProductsById(ids);
     }
 
     //find product by id for order
     @GetMapping("/product")
-    public Optional<ProductDto> findById(@RequestParam int id, @RequestParam int quantity){
+    public Optional<ProductDto> findById(@RequestParam int id, @RequestParam int quantity) {
         return productService.getProductById(id, quantity);
     }
 
 
     @GetMapping("/prduct/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable int id){
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable int id) {
         return productService.findProductById(id);
     }
 
     //find product by name
     @GetMapping("/product/name")
-    public Optional<ProductDto> findByName(@RequestParam String name){
+    public Optional<ProductDto> findByName(@RequestParam String name) {
         return productService.GetProductsByName(name);
     }
 
 
-
     //create product
     @PostMapping(value = "/product", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Product> createProduct(
             @RequestPart("data") ProductDto productDto,
             @RequestPart("photoS") List<MultipartFile> photo
-    ){
-        System.out.println("ashdasasdasdhdasdhas");
-
+    ) {
         return productService.createProduct(productDto, photo);
     }
 
-
-
-
     //add product photo
     @PostMapping("/product/photos")
-    public ResponseEntity<Set<Integer>> createPhotos(@RequestBody PhotoDto photoDto){
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Set<Integer>> createPhotos(@RequestBody PhotoDto photoDto) {
         return productService.addPhotos(photoDto);
     }
 
     //get product photo
     @GetMapping("/product/photos")
-    public ResponseEntity<Set<String>> getPhotos(@RequestParam List<Integer> ids){
+    public ResponseEntity<Set<String>> getPhotos(@RequestParam List<Integer> ids) {
         return productService.getPhotos(ids);
     }
 
@@ -91,17 +85,10 @@ public class ProductController {
     }
 
     // Get all products
-        @GetMapping("/product/all")
+    @GetMapping("/product/all")
     public List<ProductResponse> getAllProducts() {
         return productService.GetProducts();
     }
-
-    //nie działa
-    // Get products by category
-//    @GetMapping("/product/category")
-//    public ResponseEntity<List<ProductDto>> getProductsByCategory(@RequestParam Integer categoryId) {
-//        return productService.getProductsByCategory(categoryId);
-//    }
 
     //get brands
     @GetMapping("/products/brand")
@@ -123,12 +110,14 @@ public class ProductController {
 
     // Update product
     @PutMapping("/product/put")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
         return productService.updateProduct(productDto);
     }
 
     // Delete product
     @DeleteMapping("/product/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Integer> deleteProduct(@PathVariable int id) {
         return productService.deleteProduct(id);
     }
@@ -144,16 +133,5 @@ public class ProductController {
     public List<ProductResponse> getProductsByPriceDesc() {
         return productService.findAllByOrderByPriceDesc();
     }
-
-
-
-    //TODO
-    //update product
-    //find product by category
-    //find product by brand
-    //sort products by price
-    //find product by description
-
-
 
 }

@@ -7,22 +7,19 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 
 
-
 @Component
 public class CommentDtoMapper {
 
     public CommentDTO commentDTOMapper(Comment comment) {
-       return new CommentDTO(
+        return new CommentDTO(
                 comment.getCommentId(),
                 comment.getCommentBody(),
                 comment.getCommentDate(),
                 comment.getScore(),
-                comment.getUserId(),
+                comment.getKeycloakId(),
                 comment.getProductId()
         );
     }
-
-
 
 
 }

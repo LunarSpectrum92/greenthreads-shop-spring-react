@@ -23,11 +23,11 @@ import java.sql.Timestamp;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Ensure proper ID generation strategy
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer commentId;
 
     @NotEmpty(message = "Comment body must not be empty")
-    @Size(max = 1000, message = "Comment body must not exceed 1000 characters")  // Added size validation for the body
+    @Size(max = 1000, message = "Comment body must not exceed 1000 characters")
     private String commentBody;
 
     @CreationTimestamp
@@ -37,8 +37,8 @@ public class Comment {
     @Max(value = 5, message = "Score must be at most 5")
     private Integer score;
 
-    private Integer userId;
-
+//    private Integer userId;
+    private String keycloakId;
     private Integer productId;
 
 }

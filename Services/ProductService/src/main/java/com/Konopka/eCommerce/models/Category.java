@@ -17,7 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode
-@ToString@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "categoryId")
+@ToString
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "categoryId")
 
 public class Category {
 

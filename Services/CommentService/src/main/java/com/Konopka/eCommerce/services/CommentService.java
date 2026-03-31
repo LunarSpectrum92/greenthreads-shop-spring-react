@@ -8,6 +8,7 @@ import com.Konopka.eCommerce.repositories.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,44 +29,38 @@ public class CommentService {
     }
 
 
-
-    public ResponseEntity<CommentDTO> createComment(CommentRequest commentRequest) {
-
+    public ResponseEntity<CommentDTO> createComment(CommentRequest commentRequest, Authentication authentication) {
         Comment comment = Comment.builder()
                 .commentBody(commentRequest.commentBody())
                 .score(commentRequest.score())
-                .userId(commentRequest.userId())
-                .userId(commentRequest.userId())
+                .keycloakId(authentication.getName())
                 .productId(commentRequest.productId())
                 .build();
-
-
 
         commentRepository.save(comment);
         return new ResponseEntity<>(commentDtoMapper.commentDTOMapper(comment), HttpStatus.CREATED);
     }
 
 
+    public ResponseEntity<Integer> deleteComment(Integer commentId, Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_Admin"));
 
-
-
-
-
-
-
-
-
-
-    public ResponseEntity<Integer> deleteComment(Integer commentId) {
         Optional<Comment> comment = commentRepository.findById(commentId);
 
-        if(comment.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (comment.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        if (!isAdmin) {
+            if (!comment.get().getKeycloakId().equals(authentication.getName())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }
+
         commentRepository.delete(comment.get());
         return new ResponseEntity<>(commentId, HttpStatus.OK);
     }
-
 
 
     public ResponseEntity<Comment> getCommentById(Integer commentId) {
@@ -74,14 +69,11 @@ public class CommentService {
     }
 
 
-
-
-    public ResponseEntity<List<Comment>> getAllCommentsByUser(Integer userId) {
-        List<Comment> comments = commentRepository.findAllByUserId(userId);
-        if(comments.isEmpty()){
+    public ResponseEntity<List<Comment>> getAllCommentsByUser(String KeykloakId, Authentication authentication) {
+        List<Comment> comments = commentRepository.findAllByKeycloakId(authentication.getName());
+        if (comments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity<>(comments, HttpStatus.OK);
 
     }
@@ -89,7 +81,7 @@ public class CommentService {
 
     public ResponseEntity<List<CommentDTO>> getAllCommentsByProduct(Integer productId) {
         List<Comment> comments = commentRepository.findAllByProductId(productId);
-        if(comments.isEmpty()){
+        if (comments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -98,12 +90,8 @@ public class CommentService {
                 .toList();
 
 
-
         return new ResponseEntity<>(commentsMapped, HttpStatus.OK);
     }
-
-
-
 
 
 }

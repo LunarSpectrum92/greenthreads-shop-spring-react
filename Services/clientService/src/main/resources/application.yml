@@ -1,14 +1,19 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:9999
+    import: optional:configserver:http://${CONFIG_HOST:localhost}:9999
   application:
     name: clientService
+#  cloud:
+#    config:
+#      override-none: true
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:7080/realms/eCommerce-realm"
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:7080/realms/eCommerce-realm/protocol/openid-connect/certs
+          issuer-uri: http://localhost:7080/realms/eCommerce-realm
+
 
 
 

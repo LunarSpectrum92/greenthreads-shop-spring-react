@@ -36,23 +36,5 @@ public class OrderMessageConsumer {
         log.info("Order with id {} updated with status {}", payment.orderId(), payment.status());
     }
 
-//
-//    @KafkaListener(topics = "OrderPayment", groupId = "payment-group")
-//    public void consumePayment(PaymentDto paymentDto) {
-//        log.info("Consumed payment {}", paymentDto);
-//        System.out.println(paymentDto.toString());
-//    }
-
-
-//
-//
-//    @KafkaListener(topics = "OrderPayment1", groupId = "payment-group")
-//    public void consumePayment(a paymentDto) {
-//        log.info("Consumed payment {}", paymentDto);
-//        System.out.println(paymentDto.toString());
-//    }
-
-
-
 
 }

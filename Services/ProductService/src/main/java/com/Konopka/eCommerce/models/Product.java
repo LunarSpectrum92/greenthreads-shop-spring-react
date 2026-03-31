@@ -44,7 +44,7 @@ public class Product {
     private List<Category> category;
 
     @ElementCollection
-    @CollectionTable(name="photo-ids")
+    @CollectionTable(name = "photo-ids")
     private List<Integer> photoIds;
 
     private int discount;

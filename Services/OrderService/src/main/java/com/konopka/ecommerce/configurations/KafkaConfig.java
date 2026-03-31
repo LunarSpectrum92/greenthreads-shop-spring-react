@@ -21,8 +21,8 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092"; // Kafka server address
-    private static final String GROUP_ID = "payment-group"; // Consumer group ID
+    private static final String BOOTSTRAP_SERVERS = "${KAFKA_HOST:localhost:9092}";
+    private static final String GROUP_ID = "payment-group";
 
     @Bean
     public NewTopic PaymentToOrder() {
@@ -37,9 +37,6 @@ public class KafkaConfig {
                 .name("OrderToPayment")
                 .build();
     }
-
-
-
 
 
 }

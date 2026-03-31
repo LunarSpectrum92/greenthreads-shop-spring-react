@@ -12,6 +12,6 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     Optional<Client> findByKeycloakId(String keycloakId);
 
-
+    Optional<Client> findByAddressAddressId(int addressId);
 
 }

@@ -18,20 +18,15 @@ import java.util.UUID;
 @EqualsAndHashCode
 @ToString
 @Entity
-public class Client{
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
-//    private String name;
-//
-//    private String surname;
-
 
     @Pattern(regexp = "(\\+\\d{1,3})?\\d{9}", message = "Numer telefonu musi składać się z 9 cyfr, opcjonalnie z prefiksem kraju (np. +48)")
     private String phone;
-
 
     private String keycloakId;
 

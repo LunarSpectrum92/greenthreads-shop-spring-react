@@ -8,6 +8,5 @@ import java.util.List;
 public record OrderRequest(
         String clientId,
         List<OrderProductDto> orderProductsList
-        //PaymentMethod paymentMethod
 ) {
 }

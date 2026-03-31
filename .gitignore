@@ -34,3 +34,6 @@ log/
 
 # Wyklucz pliki konfiguracyjne systemów kontroli wersji
 *.orig
+.env
+FrontendService/ztpai-react-frontend/.env
+Services/PhotoService/src/main/java/com/Konopka/eCommerce/photos/*

@@ -10,9 +10,9 @@ spring:
       password: userpassword1
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/client_db
-    username: root
-    password: postgres
+    url: jdbc:postgresql://${CLIENT_DB_HOST:localhost}:5432/client_db
+    username: ${CLIENT_POSTGRE_USERNAME}
+    password: ${CLIENT_POSTGRE_PASS}
 
   jpa:
     database: postgresql
@@ -36,7 +36,7 @@ spring:
 
 
   kafka:
-    bootstrap-servers: localhost:9093
+    bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9093}
     consumer:
       group-id: user-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

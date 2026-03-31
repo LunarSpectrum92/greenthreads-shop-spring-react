@@ -18,7 +18,6 @@ public class OrderDtoMapper {
                 order.getClientId(),
                 mapOrderProductsToDto(order.getOrderProductsList()),
                 order.getStatus()
-                //order.getPaymentMethod()
         );
     }
 
@@ -28,7 +27,6 @@ public class OrderDtoMapper {
         order.setOrderDate(orderDto.orderDate());
         order.setClientId(orderDto.clientId());
         order.setOrderProductsList(mapOrderProductsToEntity(orderDto.orderProductsList()));
-        //order.setPaymentMethod(orderDto.paymentMethod());
         return order;
     }
 

@@ -7,6 +7,8 @@ import com.Konopka.eCommerce.models.ClientFeign;
 import com.Konopka.eCommerce.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,35 +27,28 @@ public class OrderController {
 
     //create order
     @PostMapping("/order")
-    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
-        return orderService.createOrder(orderRequest);
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest, Authentication authentication) {
+        return orderService.createOrder(orderRequest, authentication);
     }
-
 
     //getorder
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable Integer orderId) {
-        return orderService.getOrder(orderId);
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Integer orderId, Authentication authentication) {
+        return orderService.getOrder(orderId, authentication);
     }
 
     //getallorders
     @GetMapping("/orders")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         return orderService.getAllOrders();
     }
 
     //getOrdersByClientId
     @GetMapping("/order/client/{clientId}")
-    public ResponseEntity<List<OrderDto>> getOrdersByClientId(@PathVariable String clientId) {
-        return orderService.getOrdersByClientId(clientId);
+    public ResponseEntity<List<OrderDto>> getOrdersByClientId(@PathVariable String clientId, Authentication authentication) {
+        return orderService.getOrdersByClientId(clientId, authentication);
     }
-
-
-
-//    @GetMapping("/ordera")
-//    public String createOrder() {
-//        return clientFeign.test();
-//    }
 
 
 }

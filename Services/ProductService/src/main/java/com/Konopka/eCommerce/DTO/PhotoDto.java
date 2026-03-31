@@ -1,6 +1,6 @@
 package com.Konopka.eCommerce.DTO;
 
-import com.Konopka.eCommerce.models.Photo;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;

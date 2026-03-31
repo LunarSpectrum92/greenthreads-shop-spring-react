@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5438/photo_db
-    username: root
-    password: postgres
+    url: jdbc:postgresql://${PHOTO_DB_HOST:localhost}:${DB_PORT:5438}/photo_db
+    username: ${PHOTO_POSTGRE_USERNAME}
+    password: ${PHOTO_POSTGRE_PASS}
   jpa:
     database: postgresql
     show-sql: true
@@ -25,3 +25,5 @@ application:
     client-url: http://localhost:9010/api
     product-url: http://localhost:9020/api
 
+photo:
+  path: ${PHOTO_PATH}

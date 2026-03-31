@@ -9,9 +9,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5434/order_db
-    username: root
-    password: postgres
+    url: jdbc:postgresql://${ORDER_DB_HOST:localhost}:${DB_PORT:5434}/order_db
+    username: ${ORDER_POSTGRE_USERNAME}
+    password: ${ORDER_POSTGRE_PASS}
   jpa:
     database: postgresql
     show-sql: true
@@ -19,7 +19,7 @@ spring:
       ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
-    bootstrap-servers: localhost:9093
+    bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9093}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -29,6 +29,12 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: '*'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:7080/realms/eCommerce-realm/protocol/openid-connect/certs
+          issuer-uri: http://localhost:7080/realms/eCommerce-realm
 
 
 

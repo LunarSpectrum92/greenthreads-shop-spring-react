@@ -14,8 +14,6 @@ public class ClientDtoMapper implements Function<Client, ClientDto> {
     public ClientDto apply(Client client) {
         return new ClientDto(
                 client.getUserId(),
-//                client.getName(),
-//                client.getSurname(),
                 client.getPhone(),
                 client.getKeycloakId(),
                 client.getCreatedAt(),

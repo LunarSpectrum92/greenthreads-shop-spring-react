@@ -22,7 +22,6 @@ public class PaymentConsument {
         this.paymentService = paymentService;
     }
 
-
     @KafkaListener(topics = "OrderToPayment", groupId = "notifications-group")
     public void consumePayment(OrderDto orderDto) {
 
@@ -33,8 +32,5 @@ public class PaymentConsument {
 
         paymentService.createPayment(paymentDto);
     }
-
-
-
 
 }

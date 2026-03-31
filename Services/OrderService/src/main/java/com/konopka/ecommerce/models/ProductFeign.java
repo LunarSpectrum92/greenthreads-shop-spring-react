@@ -12,7 +12,7 @@ import java.util.Optional;
 
 
 @FeignClient(name = "PRODUCTSERVICE",
-        url = "http://localhost:9020/api/products")
+        url = "http://${PRODUCT_HOST:localhost}:9020/api/products")
 public interface ProductFeign {
 
     @GetMapping("/product")
